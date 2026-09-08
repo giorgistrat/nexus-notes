@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Claude Code Automation Patterns</title><meta charset="utf-8"/><link rel="preload" href="../../../../index-bb6c1746.css" as="style"/><link rel="preload" href="../../../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Nexus"/><meta property="og:title" content="Claude Code Automation Patterns"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Claude Code Automation Patterns"/><meta name="twitter:description" content="Claude Code Automation Patterns This note covers how to combine Claude Code primitives (Claude Code Hooks, Claude Code Orchestration, Claude Code Settings, Claude Code Memory and Context) into real end-to-end workflows."/><meta property="og:description" content="Claude Code Automation Patterns This note covers how to combine Claude Code primitives (Claude Code Hooks, Claude Code Orchestration, Claude Code Settings, Claude Code Memory and Context) into real end-to-end workflows."/><meta property="og:image:alt" content="Claude Code Automation Patterns This note covers how to combine Claude Code primitives (Claude Code Hooks, Claude Code Orchestration, Claude Code Settings, Claude Code Memory and Context) into real end-to-end workflows."/><meta property="twitter:domain" content="giorgistrat.github.io/nexus-notes"/><meta property="og:url" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/tools--and--devops/claude-code/claude-code-automation-patterns"/><meta property="twitter:url" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/tools--and--devops/claude-code/claude-code-automation-patterns"/><link rel="icon" href="../../../../static/icon.png"/><meta name="description" content="Claude Code Automation Patterns This note covers how to combine Claude Code primitives (Claude Code Hooks, Claude Code Orchestration, Claude Code Settings, Claude Code Memory and Context) into real end-to-end workflows."/><meta name="generator" content="Quartz"/><link href="../../../../index-bb6c1746.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/tools--and--devops/claude-code/claude-code-automation-patterns-og-image.webp"/><meta property="og:image:url" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/tools--and--devops/claude-code/claude-code-automation-patterns-og-image.webp"/><meta name="twitter:image" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/tools--and--devops/claude-code/claude-code-automation-patterns-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="40-resources/engineering/tools--and--devops/claude-code/claude-code-automation-patterns" data-basepath="/nexus-notes"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../../..">Nexus</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-46" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-46" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../40-resources/">40 Resources</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../40-resources/engineering/">Engineering</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../40-resources/engineering/tools--and--devops/">Tools &amp; DevOps</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../40-resources/engineering/tools--and--devops/claude-code/">Claude Code</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Claude Code Automation Patterns</a></div></nav><h1 class="article-title">Claude Code Automation Patterns</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">tags</td><td class="note-properties-value metadata-property-value"><span class="note-properties-tags"><a href="../../../../tags/reference" class="internal internal-link tag-link">reference</a><span class="note-properties-separator">, </span><a href="../../../../tags/claude-code" class="internal internal-link tag-link">claude-code</a><span class="note-properties-separator">, </span><a href="../../../../tags/automation" class="internal internal-link tag-link">automation</a><span class="note-properties-separator">, </span><a href="../../../../tags/workflows" class="internal internal-link tag-link">workflows</a></span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2026-05-24T10:30:07.715Z">May 24, 2026</time><span>14 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="claude-code-automation-patterns">Claude Code Automation Patterns<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#claude-code-automation-patterns" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p>This note covers how to combine Claude Code primitives (<a href="../../../../40-resources/engineering/tools--and--devops/claude-code/claude-code-hooks" class="internal internal-link alias" data-slug="40-resources/engineering/tools--and--devops/claude-code/claude-code-hooks">Claude Code Hooks</a>, <a href="../../../../40-resources/engineering/tools--and--devops/claude-code/claude-code-orchestration" class="internal internal-link alias" data-slug="40-resources/engineering/tools--and--devops/claude-code/claude-code-orchestration">Claude Code Orchestration</a>, <a href="../../../../40-resources/engineering/tools--and--devops/claude-code/claude-code-settings" class="internal internal-link alias" data-slug="40-resources/engineering/tools--and--devops/claude-code/claude-code-settings">Claude Code Settings</a>, <a href="../../../../40-resources/engineering/tools--and--devops/claude-code/claude-code-memory-and-context" class="internal internal-link alias" data-slug="40-resources/engineering/tools--and--devops/claude-code/claude-code-memory-and-context">Claude Code Memory and Context</a>) into real end-to-end workflows. The primitives are the building blocks; this is the applied layer.</p>
+<blockquote>
+<p><strong>New to this?</strong> Claude Code is Anthropic’s CLI tool — you run it in a terminal and it can read, write, and run code on your machine. The patterns here are ways to wire it up so it automates whole workflows instead of just answering one-off questions. You don’t need to understand everything at once. Start with the <code>/ticket</code> example to get a feel for the shape of things, then refer back to the other patterns as you need them.</p>
+</blockquote>
+<hr/>
+<h2 id="core-concepts-read-this-first">Core Concepts (Read This First)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#core-concepts-read-this-first" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Before diving into the patterns, here are the four building blocks they rely on. Each one has its own dedicated note, but a one-sentence definition helps while reading the patterns below.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Building Block</th><th>What it does in plain language</th></tr></thead><tbody><tr><td><strong>Skill</strong></td><td>A custom slash command you define (e.g. <code>/ticket</code>, <code>/bug</code>). Claude runs it when you type the command. Lives in <code>.claude/skills/&lt;name>/SKILL.md</code>.</td></tr><tr><td><strong>Hook</strong></td><td>A shell command that fires automatically when Claude takes a specific action — like running a linter every time Claude saves a file. Lives in <code>settings.json</code>.</td></tr><tr><td><strong>Routine</strong></td><td>A scheduled task that runs on a cron schedule (e.g. “every Monday at 9am”). Runs on Anthropic’s cloud, so your laptop doesn’t need to be on. Configured in Claude Code settings.</td></tr><tr><td><strong>Subagent</strong></td><td>A fresh Claude session that runs independently, in parallel or in sequence, to handle one piece of a larger task without cluttering the main session’s context. Defined in <code>.claude/agents/&lt;name>.md</code>.</td></tr></tbody></table></div>
+<blockquote>
+<p><strong>On “context”:</strong> Each Claude session has a context window — a limit on how much text (code, instructions, history) it can hold in memory at once. Subagents help because noisy tasks (like parsing a large API response) run in their own context, keeping the main session focused.</p>
+</blockquote>
+<hr/>
+<h2 id="the-ticket-workflow--canonical-linear-pipeline">The /ticket Workflow — Canonical Linear Pipeline<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-ticket-workflow--canonical-linear-pipeline" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>A complete end-to-end workflow: accept a ticket ID → fetch Jira + Figma → plan → code → lint → test → push → open PR. This is the reference implementation for any “input → shipped artifact” automation.</p>
+<h3 id="step-1-skill-entry-point">Step 1: Skill Entry Point<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#step-1-skill-entry-point" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<blockquote>
+<p><strong>What this does:</strong> Defines the <code>/ticket</code> slash command. When you type <code>/ticket PROJ-123</code>, Claude Code reads this file to know what it’s allowed to do and how to run.</p>
+</blockquote>
+<blockquote>
+<p><strong>File to create:</strong> <code>.claude/skills/ticket/SKILL.md</code>
+(<code>.claude/</code> lives at the root of your project — the same folder that contains your code)</p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="yaml" data-theme="github-light github-dark"><code data-language="yaml" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">---</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">ticket</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">description</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">Implement a Jira ticket end-to-end — fetch, plan, code, test, ship</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">arguments</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">:</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">  - </span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">ticket_id</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">    description</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">Jira ticket ID e.g. PROJ-123</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">allowed-tools</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">Bash(jira *) Bash(gh *) Bash(npm *) Bash(git *) Read Edit Write WebFetch</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">context</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">fork</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">permissionMode</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">auto</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">---</span></span></code></pre></figure>
+<p><strong>What each field means:</strong></p>
+<ul>
+<li><code>name</code> — the word you type after <code>/</code> (here: <code>/ticket</code>)</li>
+<li><code>arguments</code> — the value you pass in; <code>$ticket_id</code> becomes a variable you can reference inside the skill</li>
+<li><code>allowed-tools</code> — the tools Claude is allowed to use inside this skill (limits scope for safety)</li>
+<li><code>context: fork</code> — runs in an isolated subagent so it doesn’t pollute your main session’s history</li>
+<li><code>permissionMode: auto</code> — Claude approves its own tool calls without prompting you; fine for pre-vetted skills</li>
+</ul>
+<p>Invoke with: <code>/ticket PROJ-123</code></p>
+<hr/>
+<h3 id="steps-23-fetch-jira--figma-via-dynamic-context-injection">Steps 2–3: Fetch Jira + Figma via Dynamic Context Injection<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#steps-23-fetch-jira--figma-via-dynamic-context-injection" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<blockquote>
+<p><strong>What this does:</strong> Before Claude starts reasoning, these lines <em>run shell commands</em> and paste their output directly into the skill. Claude receives resolved facts — the actual ticket data and Figma designs — rather than being told “go fetch the ticket” (which it could do wrong or skip).</p>
+</blockquote>
+<blockquote>
+<p><strong>File:</strong> <code>.claude/skills/ticket/SKILL.md</code> — add this below the YAML frontmatter</p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="markdown" data-theme="github-light github-dark"><code data-language="markdown" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#005CC5;--shiki-light-font-weight:bold;--shiki-dark:#79B8FF;--shiki-dark-font-weight:bold;" data-token-type="punctuation">## Ticket</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">!</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">`jira issue view $ticket_id --output json`</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-light-font-weight:bold;--shiki-dark:#79B8FF;--shiki-dark-font-weight:bold;" data-token-type="punctuation">## Figma designs (if any)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">!`jira issue view $ticket_id --output json \</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  | jq -r '.fields.description' \</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  | grep -oE 'https://www.figma.com/[^ ]+' \</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  | while read url; do</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">      echo &quot;=== $url ===&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">      curl -s -H &quot;X-Figma-Token: $FIGMA_TOKEN&quot; \</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">        &quot;https://api.figma.com/v1/files/$(echo $url | sed 's|.</span><span style="--shiki-light:#24292E;--shiki-light-font-style:italic;--shiki-dark:#E1E4E8;--shiki-dark-font-style:italic;" data-token-type="punctuation">*file/</span><span style="--shiki-light:#005CC5;--shiki-light-font-style:italic;--shiki-dark:#79B8FF;--shiki-dark-font-style:italic;" data-token-type="string">\(</span><span style="--shiki-light:#24292E;--shiki-light-font-style:italic;--shiki-dark:#E1E4E8;--shiki-dark-font-style:italic;" data-token-type="punctuation">[</span><span style="--shiki-light:#032F62;--shiki-light-text-decoration:underline;--shiki-dark:#DBEDFF;--shiki-dark-text-decoration:underline;" data-token-type="string">^/</span><span style="--shiki-light:#24292E;--shiki-light-font-style:italic;--shiki-dark:#E1E4E8;--shiki-dark-font-style:italic;" data-token-type="punctuation">]*</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="string">\)</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">/.*|\1|')&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    done`</span></span></code></pre></figure>
+<p><strong>The <code>!</code> prefix</strong> is the key mechanism: any line starting with <code>!</code> followed by a shell command runs <em>before</em> Claude sees the file, and the output replaces that line. Think of it as a pre-processor that resolves live data into static facts.</p>
+<p><strong>Environment variables</strong> (<code>$JIRA_TOKEN</code>, <code>$FIGMA_TOKEN</code> etc.) need to be set so the shell commands can authenticate. Set them in <a href="../../../../40-resources/engineering/tools--and--devops/claude-code/claude-code-settings" class="internal internal-link alias" data-slug="40-resources/engineering/tools--and--devops/claude-code/claude-code-settings">Claude Code Settings</a> under <code>&quot;env&quot;</code>:</p>
+<blockquote>
+<p><strong>File:</strong> <code>.claude/settings.json</code></p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="json" data-theme="github-light github-dark"><code data-language="json" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">  &quot;env&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: {</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">    &quot;JIRA_TOKEN&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;your-token-here&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">    &quot;FIGMA_TOKEN&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;your-token-here&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">  }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<hr/>
+<h3 id="step-4-linting--posttooluse-hook-deterministic">Step 4: Linting — PostToolUse Hook (deterministic)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#step-4-linting--posttooluse-hook-deterministic" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<blockquote>
+<p><strong>What this does:</strong> Every time Claude edits or writes a file, this hook fires a linter automatically. Claude doesn’t decide whether to lint — it always happens. This is the key property of hooks: they are <em>deterministic side-effects</em>, not suggestions.</p>
+</blockquote>
+<blockquote>
+<p><strong>File:</strong> <code>.claude/settings.json</code> (merge with the <code>&quot;env&quot;</code> block from above)</p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="json" data-theme="github-light github-dark"><code data-language="json" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">  &quot;hooks&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: {</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">    &quot;PostToolUse&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [{</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">      &quot;matcher&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;Edit|Write&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">      &quot;hooks&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [{ </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;type&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;command&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;command&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;npm run lint --fix&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;async&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> }]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    }]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">  }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p><strong>What each field means:</strong></p>
+<ul>
+<li><code>PostToolUse</code> — the event: fires after a tool call completes (vs. <code>PreToolUse</code> which fires before)</li>
+<li><code>matcher</code> — a regex that matches tool names; <code>&quot;Edit|Write&quot;</code> means “whenever Claude edits or writes a file”</li>
+<li><code>type: command</code> — run a shell command (as opposed to <code>type: prompt</code>, which asks Claude to evaluate something)</li>
+<li><code>async: true</code> — the hook runs in the background; Claude doesn’t wait for lint to finish before continuing</li>
+</ul>
+<hr/>
+<h3 id="steps-59-test--commit--push--pr-skill-instructions">Steps 5–9: Test → Commit → Push → PR (skill instructions)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#steps-59-test--commit--push--pr-skill-instructions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<blockquote>
+<p><strong>What this does:</strong> The remaining steps are plain instructions inside the skill body. Claude reads them and executes each step in order.</p>
+</blockquote>
+<blockquote>
+<p><strong>File:</strong> <code>.claude/skills/ticket/SKILL.md</code> — add this below the context-injection section</p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="markdown" data-theme="github-light github-dark"><code data-language="markdown" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#005CC5;--shiki-light-font-weight:bold;--shiki-dark:#79B8FF;--shiki-dark-font-weight:bold;" data-token-type="punctuation">## Your task</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">1.</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> Read the ticket and designs above carefully.</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">2.</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> Identify files that need to change. Read them first.</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">3.</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> Think through the implementation before touching anything.</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">4.</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> Write the code. Linting runs automatically on every save.</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">5.</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> Run </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">`npm test`</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> — fix any failures before continuing.</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">6.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation"> `git checkout -b feat/$ticket_id`</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">7.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation"> `git add -A &amp;&amp; git commit -m &quot;feat($ticket_id): &lt;one-line summary>&quot;`</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">8.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation"> `git push -u origin HEAD`</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">9.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation"> `gh pr create --title &quot;...&quot; --body &quot;Closes $ticket_id\n\n&lt;summary>&quot;`</span></span></code></pre></figure>
+<p><strong>Why pre-approve permissions?</strong> Without this, Claude stops to ask “may I run <code>git push</code>?” mid-flow — which defeats the point of automation. Pre-approve predictable, safe commands so the whole pipeline runs unattended.</p>
+<blockquote>
+<p><strong>File:</strong> <code>.claude/settings.json</code> (add <code>&quot;permissions&quot;</code> to the existing object)</p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="json" data-theme="github-light github-dark"><code data-language="json" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">  &quot;permissions&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: {</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">    &quot;allow&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">      &quot;Bash(npm test)&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">      &quot;Bash(git checkout *)&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">      &quot;Bash(git add *)&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">      &quot;Bash(git commit *)&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">      &quot;Bash(git push *)&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">      &quot;Bash(gh pr create *)&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    ]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">  }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p>The <code>*</code> wildcard means “allow this command with any arguments.” For example, <code>&quot;Bash(git commit *)&quot;</code> allows <code>git commit -m &quot;anything&quot;</code>.</p>
+<hr/>
+<h3 id="advanced-multi-subagent-ticket">Advanced: Multi-Subagent /ticket<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#advanced-multi-subagent-ticket" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<blockquote>
+<p><strong>What this does:</strong> For complex tickets that span the full stack, splits the work across specialised subagents so each one stays focused and doesn’t have to juggle everything at once.</p>
+</blockquote>
+<blockquote>
+<p><strong>Files to create:</strong></p>
+<ul>
+<li><code>.claude/agents/researcher.md</code></li>
+<li><code>.claude/agents/implementer.md</code></li>
+<li><code>.claude/agents/tester.md</code></li>
+</ul>
+</blockquote>
+<pre><code>/ticket PROJ-123
+  │
+  ├── researcher.md    (Read, Grep, Glob, WebFetch)
+  │     → reads ticket + Figma + codebase
+  │     → returns: implementation plan + files to touch
+  │
+  ├── implementer.md   (Read, Edit, Write, Bash(npm run lint))
+  │     → receives plan from researcher
+  │     → writes code, lint is automatic
+  │
+  ├── tester.md        (Bash(npm test), Read)
+  │     → runs test suite
+  │     → returns: pass/fail + fixes needed
+  │
+  └── main session
+        → git push + gh pr create
+</code></pre>
+<p>Each <code>.md</code> file in <code>.claude/agents/</code> defines one agent: its name, what tools it can use, and the instructions it follows. The main skill orchestrates them by invoking each subagent in sequence, passing results forward.</p>
+<hr/>
+<h2 id="the-8-orchestration-patterns">The 8 Orchestration Patterns<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-8-orchestration-patterns" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<blockquote>
+<p><strong>What “orchestration” means here:</strong> Orchestration is the art of arranging multiple Claude sessions, hooks, and scheduled jobs so they work together as a system — rather than you manually triggering each step.</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>#</th><th>Pattern</th><th>Primitive(s)</th><th>When</th></tr></thead><tbody><tr><td>1</td><td>Linear Pipeline</td><td>Skill + Hooks + Bash</td><td>Input → shipped artifact</td></tr><tr><td>2</td><td>Fan-Out Researcher</td><td>Agent Teams / subagents</td><td>Parallel investigation</td></tr><tr><td>3</td><td>Gatekeeper</td><td>PreToolUse hooks</td><td>Enforcement, compliance</td></tr><tr><td>4</td><td>Sidekick</td><td>PostToolUse hooks (async)</td><td>Side-effects on every action</td></tr><tr><td>5</td><td>Scheduled Sentinel</td><td>Routines (cron)</td><td>Monitoring, maintenance</td></tr><tr><td>6</td><td>Event-Driven Reactor</td><td>Routines (GitHub trigger)</td><td>CI/CD integration</td></tr><tr><td>7</td><td>Autonomous Background Worker</td><td>Background Sessions</td><td>Parallelisable independent tasks</td></tr><tr><td>8</td><td>Memory-Augmented Assistant</td><td>Auto Memory + CLAUDE.md</td><td>Long-running projects</td></tr></tbody></table></div>
+<hr/>
+<h3 id="pattern-1-linear-pipeline">Pattern 1: Linear Pipeline<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pattern-1-linear-pipeline" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Shape:</strong> Input → fetch context → plan → implement → validate → ship</p>
+<p>The <code>/ticket</code> workflow above is the reference implementation. Other examples:</p>
+<ul>
+<li><code>/bug SENTRY-456</code> — fetch Sentry error, reproduce, fix, test, PR</li>
+<li><code>/migration</code> — generate SQL migration, dry-run, apply, verify schema</li>
+<li><code>/feature &quot;add dark mode&quot;</code> — design in notes, implement, test, PR</li>
+</ul>
+<blockquote>
+<p><strong>Beginner note:</strong> Think of this like an assembly line. Raw material (a ticket ID) enters one end, and a finished product (a merged PR) comes out the other. Each step in the line does exactly one thing and hands off to the next.</p>
+</blockquote>
+<hr/>
+<h3 id="pattern-2-fan-out-researcher">Pattern 2: Fan-Out Researcher<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pattern-2-fan-out-researcher" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Shape:</strong> One ambiguous question → N subagents investigate different angles → lead synthesises</p>
+<pre><code>/investigate &quot;why is checkout slow&quot;
+  ├── Subagent A: profile database queries
+  ├── Subagent B: profile network calls  
+  └── Subagent C: profile frontend rendering
+  → Lead: synthesise into root cause report
+</code></pre>
+<blockquote>
+<p><strong>Beginner note:</strong> Instead of one Claude session trying to hold the entire investigation in its head, you split the work. Each subagent is a fresh session that focuses on one angle. The lead session collects their reports and combines them — like a team of researchers presenting findings to a lead analyst.</p>
+</blockquote>
+<p>Use Agent Teams (experimental, requires <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> environment variable) when teammates need to discuss findings. Use sequential subagents when each phase depends on the previous result.</p>
+<hr/>
+<h3 id="pattern-3-gatekeeper">Pattern 3: Gatekeeper<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pattern-3-gatekeeper" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Shape:</strong> <code>PreToolUse</code> hook evaluates every tool call <em>before</em> it runs and blocks if needed</p>
+<blockquote>
+<p><strong>Beginner note:</strong> A hook can fire <em>before</em> a tool executes (<code>PreToolUse</code>) and optionally <em>cancel</em> it. This is how you enforce rules that Claude must follow regardless of what it was told to do — the hook runs at the harness level, outside Claude’s control.</p>
+</blockquote>
+<blockquote>
+<p><strong>File:</strong> <code>.claude/settings.json</code></p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="json" data-theme="github-light github-dark"><code data-language="json" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">  &quot;hooks&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: {</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">    &quot;PreToolUse&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [{</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">      &quot;matcher&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;Bash&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">      &quot;hooks&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [{ </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;type&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;prompt&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;prompt&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;Is this bash command safe and reversible? $ARGUMENTS&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> }]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    }]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">  }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p><strong>What <code>type: prompt</code> does:</strong> Instead of running a shell command, it asks Claude to evaluate the question. If Claude decides the answer is “no,” the tool call is cancelled. This uses Claude’s own judgement as the gatekeeper.</p>
+<p><strong>For rules that don’t need judgement</strong> (e.g. always block <code>rm -rf</code>), use <code>&quot;type&quot;: &quot;command&quot;</code> with a script that exits with code <code>2</code> — that exit code signals “block this tool call” to the harness.</p>
+<p>Use cases:</p>
+<ul>
+<li>Block <code>rm -rf</code>, <code>DROP TABLE</code>, <code>git push --force</code></li>
+<li>Validate <code>.env</code> edits are intentional</li>
+<li>Check new files have the correct license header before <code>Write</code> completes</li>
+<li>Require approval before any production database command</li>
+</ul>
+<hr/>
+<h3 id="pattern-4-sidekick">Pattern 4: Sidekick<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pattern-4-sidekick" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Shape:</strong> Every action produces an async side-effect — observability, notifications, quality</p>
+<blockquote>
+<p><strong>Beginner note:</strong> A “sidekick” is any hook that fires after every action and does something useful in the background without blocking Claude’s work. The <code>async: true</code> flag means Claude keeps going while the sidekick runs.</p>
+</blockquote>
+<blockquote>
+<p><strong>File:</strong> <code>.claude/settings.json</code></p>
+</blockquote>
+<p>All hooks on the same event compose independently — lint + notify + log can all fire on the same <code>PostToolUse</code>:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="json" data-theme="github-light github-dark"><code data-language="json" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">  &quot;hooks&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: {</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">    &quot;PostToolUse&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">      {</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">        &quot;matcher&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;Edit|Write&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">        &quot;hooks&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [{ </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;type&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;command&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;command&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;npm run lint --fix&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;async&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> }]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">      },</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">      {</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">        &quot;matcher&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;Edit|Write&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">        &quot;hooks&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [{ </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;type&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;command&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;command&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;echo </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="string">\&quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">$(date): $TOOL_NAME $ARGUMENTS</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="string">\&quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> >> ~/.claude/audit.log&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;async&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> }]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">      }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    ]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">  }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p>Use cases:</p>
+<ul>
+<li><strong>Audit log:</strong> log every file edit to <code>~/.claude/audit.log</code></li>
+<li><strong>Notifications:</strong> Slack message when a PR is created; desktop notification on <code>Stop</code></li>
+<li><strong>Formatting:</strong> run prettier after every <code>Edit</code></li>
+<li><strong>Vault sync:</strong> sync Obsidian on every note write</li>
+</ul>
+<hr/>
+<h3 id="pattern-5-scheduled-sentinel">Pattern 5: Scheduled Sentinel<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pattern-5-scheduled-sentinel" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Shape:</strong> On a cron schedule, Claude wakes up, checks some state, acts if needed</p>
+<blockquote>
+<p><strong>Beginner note:</strong> A “sentinel” watches for problems. You define a task that runs on a schedule — say, every Monday at 9am — and Claude checks if something is wrong and acts on it. This uses the <strong>Routines</strong> feature, which runs on Anthropic’s cloud (not your machine), so it works even when your laptop is off.</p>
+</blockquote>
+<blockquote>
+<p><strong>Configured in:</strong> Claude Code’s Routines settings (not a local file — configured via the Claude Code UI or CLI)</p>
+</blockquote>
+<pre><code>/schedule weekdays at 9am, check all open PRs older than 3 days, leave a gentle nudge comment
+/schedule weekly on Monday, scan npm dependencies for CVEs and open a Jira ticket for each critical one
+/schedule daily at 6pm, summarise today's merged PRs and post to #engineering Slack channel
+</code></pre>
+<p>Minimum interval: 1 hour. See <a href="../../../../40-resources/engineering/tools--and--devops/claude-code/claude-code-orchestration" class="internal internal-link alias" data-slug="40-resources/engineering/tools--and--devops/claude-code/claude-code-orchestration">Claude Code Orchestration</a> → Routines for setup details.</p>
+<hr/>
+<h3 id="pattern-6-event-driven-reactor">Pattern 6: Event-Driven Reactor<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pattern-6-event-driven-reactor" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Shape:</strong> External event (e.g. a PR being opened) → Claude acts</p>
+<blockquote>
+<p><strong>Beginner note:</strong> Instead of running on a timer, the reactor waits for something to happen and responds to it. GitHub triggers are the most common case — Claude can post a code review, leave a welcome message, or draft a changelog automatically when a PR is opened.</p>
+</blockquote>
+<blockquote>
+<p><strong>Configured in:</strong> Claude Code’s Routines settings (same as Scheduled Sentinel, but trigger is an event rather than a time)</p>
+</blockquote>
+<p>GitHub trigger examples:</p>
+<ul>
+<li>PR opened with label <code>needs-review</code> → Claude posts inline review comments</li>
+<li>PR opened by a first-time contributor → Claude posts welcome checklist</li>
+<li>Release published → Claude drafts changelog from commits</li>
+</ul>
+<pre><code>Trigger: Pull Request opened
+Filter:  label = &quot;needs-review&quot;
+Prompt:  Review this PR for correctness, edge cases, and test coverage.
+         Post findings as inline GitHub comments.
+</code></pre>
+<p>For <strong>local</strong> file events, use the <code>FileChanged</code> hook instead:</p>
+<blockquote>
+<p><strong>File:</strong> <code>.claude/settings.json</code></p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="json" data-theme="github-light github-dark"><code data-language="json" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">  &quot;hooks&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: {</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">    &quot;FileChanged&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">      {</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">        &quot;matcher&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;schema.prisma&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">        &quot;hooks&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: [{ </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;type&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;command&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">&quot;command&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;npx prisma generate&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> }]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">      }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    ]</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">  }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<ul>
+<li><code>schema.prisma</code> changes → auto-regenerate TypeScript types</li>
+<li>Config file changes → validate and warn if something looks off</li>
+</ul>
+<hr/>
+<h3 id="pattern-7-autonomous-background-worker">Pattern 7: Autonomous Background Worker<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pattern-7-autonomous-background-worker" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Shape:</strong> Dispatch N independent tasks in parallel; monitor and merge results</p>
+<blockquote>
+<p><strong>Beginner note:</strong> Background workers let you run multiple Claude sessions at the same time on completely independent tasks. Each one checks out its own copy of the repo (a “worktree”), so they can’t step on each other’s files. You review each result and merge when satisfied.</p>
+</blockquote>
+<blockquote>
+<p><strong>Run from your terminal</strong> (no config file needed — this is a CLI invocation pattern)</p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">claude</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> --bg</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;fix the login timeout bug in PROJ-101&quot;</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">claude</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> --bg</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;fix the payment rounding error in PROJ-102&quot;</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">claude</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> --bg</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;fix the search pagination bug in PROJ-103&quot;</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">claude</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> agents</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">   # monitor all three</span></span></code></pre></figure>
+<p>Each session runs in its own git worktree — no file conflicts. Pre-approve common operations in settings to avoid permission prompts mid-run. Review each branch and merge when done.</p>
+<blockquote>
+<p><strong><code>--bg</code> flag</strong> tells Claude Code to run the session in the background without holding your terminal open.</p>
+</blockquote>
+<hr/>
+<h3 id="pattern-8-memory-augmented-assistant">Pattern 8: Memory-Augmented Assistant<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#pattern-8-memory-augmented-assistant" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Shape:</strong> Claude accumulates project knowledge over time; sessions start progressively warmer</p>
+<blockquote>
+<p><strong>Beginner note:</strong> “Warm” context means Claude already knows your project when a new session starts — build setup, conventions, known gotchas — without you re-explaining it. Two mechanisms combine here: (1) auto-memory, where Claude saves facts it learns to a file between sessions; (2) <code>CLAUDE.md</code>, a file at the root of your project that Claude always reads at the start of every session.</p>
+</blockquote>
+<blockquote>
+<p><strong>Files involved:</strong></p>
+<ul>
+<li><code>CLAUDE.md</code> at your project root — static project context you write once (or Claude helps you draft)</li>
+<li><code>~/.claude/projects/&lt;project>/memory/</code> — auto-memory files Claude writes to persist what it learns</li>
+</ul>
+</blockquote>
+<ul>
+<li><strong>Session 1:</strong> you explain architecture, build setup, conventions → Claude saves to memory</li>
+<li><strong>Session 2:</strong> Claude already knows build command, preferred patterns, known gotchas</li>
+<li><strong>Over time:</strong> mental model of the codebase builds without re-reading everything</li>
+</ul>
+<p>Pair with skills that inject live project state before Claude starts:</p>
+<blockquote>
+<p><strong>File:</strong> <code>.claude/skills/&lt;any-skill>/SKILL.md</code> — add at the top of any skill for live project health</p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="markdown" data-theme="github-light github-dark"><code data-language="markdown" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#005CC5;--shiki-light-font-weight:bold;--shiki-dark:#79B8FF;--shiki-dark-font-weight:bold;" data-token-type="punctuation">## Project health</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">!</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">`git log --oneline -10`</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">!</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">`npm test -- --passWithNoTests 2>&amp;1 | tail -5`</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">!</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="punctuation">`git status --short`</span></span></code></pre></figure>
+<p>This gives Claude an up-to-date snapshot every time the skill runs — recent commits, test status, and dirty files — without having to ask you.</p>
+<hr/>
+<h2 id="design-principles">Design Principles<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#design-principles" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Principle</th><th>Why It Matters</th></tr></thead><tbody><tr><td><strong>Determinism at boundaries</strong></td><td>Hooks for things that must always happen. Claude for judgment calls.</td></tr><tr><td><strong>Context injection over instructions</strong></td><td><code>!`command`</code> gives Claude facts. “Go fetch the ticket” gives Claude a task it might do wrong.</td></tr><tr><td><strong>Pre-approve autonomously</strong></td><td>For skills that ship code, add all Bash patterns to <code>permissions.allow</code> upfront — zero prompts mid-run.</td></tr><tr><td><strong>Subagents for isolation</strong></td><td>Noisy tool calls (Figma parsing, test runs) belong in subagents so the main context stays clean.</td></tr><tr><td><strong>Hooks are composable</strong></td><td>A lint hook + a notify hook + a log hook can all fire on the same <code>PostToolUse</code> independently.</td></tr><tr><td><strong>Routines for unattended work</strong></td><td>If it needs to run while your laptop is closed, it’s a routine — not a skill or a session.</td></tr></tbody></table></div>
+<hr/>
+<h2 id="file-map">File Map<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#file-map" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>A quick reference for where everything lives:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>What you’re configuring</th><th>File</th></tr></thead><tbody><tr><td>Custom slash commands (Skills)</td><td><code>.claude/skills/&lt;name>/SKILL.md</code></td></tr><tr><td>Subagent definitions</td><td><code>.claude/agents/&lt;name>.md</code></td></tr><tr><td>Hooks, permissions, env vars</td><td><code>.claude/settings.json</code> (project-level)</td></tr><tr><td>Global hooks and permissions</td><td><code>~/.claude/settings.json</code> (applies to all projects)</td></tr><tr><td>Persistent project context Claude always reads</td><td><code>CLAUDE.md</code> at project root</td></tr><tr><td>Scheduled tasks and event triggers</td><td>Claude Code Routines (configured via CLI/UI, stored in Anthropic cloud)</td></tr><tr><td>Auto-memory files (written by Claude)</td><td><code>~/.claude/projects/&lt;project>/memory/</code></td></tr></tbody></table></div></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-35" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#claude-code-automation-patterns" data-for="claude-code-automation-patterns">Claude Code Automation Patterns</a></li><li class="depth-1"><a href="#core-concepts-read-this-first" data-for="core-concepts-read-this-first">Core Concepts (Read This First)</a></li><li class="depth-1"><a href="#the-ticket-workflow--canonical-linear-pipeline" data-for="the-ticket-workflow--canonical-linear-pipeline">The /ticket Workflow — Canonical Linear Pipeline</a></li><li class="depth-2"><a href="#step-1-skill-entry-point" data-for="step-1-skill-entry-point">Step 1: Skill Entry Point</a></li><li class="depth-2"><a href="#steps-23-fetch-jira--figma-via-dynamic-context-injection" data-for="steps-23-fetch-jira--figma-via-dynamic-context-injection">Steps 2–3: Fetch Jira + Figma via Dynamic Context Injection</a></li><li class="depth-2"><a href="#step-4-linting--posttooluse-hook-deterministic" data-for="step-4-linting--posttooluse-hook-deterministic">Step 4: Linting — PostToolUse Hook (deterministic)</a></li><li class="depth-2"><a href="#steps-59-test--commit--push--pr-skill-instructions" data-for="steps-59-test--commit--push--pr-skill-instructions">Steps 5–9: Test → Commit → Push → PR (skill instructions)</a></li><li class="depth-2"><a href="#advanced-multi-subagent-ticket" data-for="advanced-multi-subagent-ticket">Advanced: Multi-Subagent /ticket</a></li><li class="depth-1"><a href="#the-8-orchestration-patterns" data-for="the-8-orchestration-patterns">The 8 Orchestration Patterns</a></li><li class="depth-2"><a href="#pattern-1-linear-pipeline" data-for="pattern-1-linear-pipeline">Pattern 1: Linear Pipeline</a></li><li class="depth-2"><a href="#pattern-2-fan-out-researcher" data-for="pattern-2-fan-out-researcher">Pattern 2: Fan-Out Researcher</a></li><li class="depth-2"><a href="#pattern-3-gatekeeper" data-for="pattern-3-gatekeeper">Pattern 3: Gatekeeper</a></li><li class="depth-2"><a href="#pattern-4-sidekick" data-for="pattern-4-sidekick">Pattern 4: Sidekick</a></li><li class="depth-2"><a href="#pattern-5-scheduled-sentinel" data-for="pattern-5-scheduled-sentinel">Pattern 5: Scheduled Sentinel</a></li><li class="depth-2"><a href="#pattern-6-event-driven-reactor" data-for="pattern-6-event-driven-reactor">Pattern 6: Event-Driven Reactor</a></li><li class="depth-2"><a href="#pattern-7-autonomous-background-worker" data-for="pattern-7-autonomous-background-worker">Pattern 7: Autonomous Background Worker</a></li><li class="depth-2"><a href="#pattern-8-memory-augmented-assistant" data-for="pattern-8-memory-augmented-assistant">Pattern 8: Memory-Augmented Assistant</a></li><li class="depth-1"><a href="#design-principles" data-for="design-principles">Design Principles</a></li><li class="depth-1"><a href="#file-map" data-for="file-map">File Map</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../../../../40-resources/engineering/tools--and--devops/claude-code/readme" class="internal">README</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script src="../../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../../postscript-3eea7814.js" type="module" data-persist="true"></script></html>

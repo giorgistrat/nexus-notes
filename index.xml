@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+      <title>Nexus</title>
+      <link>https://giorgistrat.github.io/nexus-notes</link>
+      <description>Last 10 notes on Nexus</description>
+      <generator>Quartz -- quartz.jzhao.xyz</generator>
+      <item>
+    <title>Algorithms &amp; Data Structures</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/algorithms--and--data-structures/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/algorithms--and--data-structures/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item><item>
+    <title>Engineering</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item><item>
+    <title>40 Resources</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item><item>
+    <title>Architecture &amp; Design</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/architecture--and--design/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/architecture--and--design/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item><item>
+    <title>JavaScript</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item><item>
+    <title>React</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item><item>
+    <title>React Hooks</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-hooks/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-hooks/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item><item>
+    <title>Data Fetching</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-suspense/data-fetching/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-suspense/data-fetching/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item><item>
+    <title>Dynamic Promises</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-suspense/dynamic-promises/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-suspense/dynamic-promises/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item><item>
+    <title>Optimistic UI</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-suspense/optimistic-ui/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-suspense/optimistic-ui/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 08 Sep 2026 13:52:01 GMT</pubDate>
+  </item>
+    </channel>
+  </rss>
