@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+      <title>Nexus</title>
+      <link>https://giorgistrat.github.io/nexus-notes</link>
+      <description>Last 10 notes on Nexus</description>
+      <generator>Quartz -- quartz.jzhao.xyz</generator>
+      <item>
+    <title>Algorithms &amp; Data Structures</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/algorithms--and--data-structures/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/algorithms--and--data-structures/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item><item>
+    <title>Engineering</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item><item>
+    <title>40 Resources</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item><item>
+    <title>Architecture &amp; Design</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/architecture--and--design/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/architecture--and--design/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item><item>
+    <title>JavaScript</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item><item>
+    <title>React</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item><item>
+    <title>Composition</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/advanced-react-patterns/composition/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/advanced-react-patterns/composition/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item><item>
+    <title>Latest Ref</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/advanced-react-patterns/latest-ref/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/advanced-react-patterns/latest-ref/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item><item>
+    <title>Prop Getters</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/advanced-react-patterns/prop-getters/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/advanced-react-patterns/prop-getters/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item><item>
+    <title>Slots</title>
+    <link>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/advanced-react-patterns/slots/</link>
+    <guid>https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/advanced-react-patterns/slots/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Thu, 24 Sep 2026 19:09:20 GMT</pubDate>
+  </item>
+    </channel>
+  </rss>
