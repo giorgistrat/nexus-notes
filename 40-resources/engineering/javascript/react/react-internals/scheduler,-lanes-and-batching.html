@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Scheduler, Lanes and Batching</title><meta charset="utf-8"/><link rel="preload" href="../../../../../index-bb6c1746.css" as="style"/><link rel="preload" href="../../../../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="Nexus"/><meta property="og:title" content="Scheduler, Lanes and Batching"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Scheduler, Lanes and Batching"/><meta name="twitter:description" content="Scheduler, Lanes and Batching How React decides when to render and how urgently."/><meta property="og:description" content="Scheduler, Lanes and Batching How React decides when to render and how urgently."/><meta property="og:image:alt" content="Scheduler, Lanes and Batching How React decides when to render and how urgently."/><meta property="twitter:domain" content="giorgistrat.github.io/nexus-notes"/><meta property="og:url" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-internals/scheduler,-lanes-and-batching"/><meta property="twitter:url" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-internals/scheduler,-lanes-and-batching"/><link rel="icon" href="../../../../../static/icon.png"/><meta name="description" content="Scheduler, Lanes and Batching How React decides when to render and how urgently."/><meta name="generator" content="Quartz"/><link href="../../../../../index-bb6c1746.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-internals/scheduler,-lanes-and-batching-og-image.webp"/><meta property="og:image:url" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-internals/scheduler,-lanes-and-batching-og-image.webp"/><meta name="twitter:image" content="https://giorgistrat.github.io/nexus-notes/40-resources/engineering/javascript/react/react-internals/scheduler,-lanes-and-batching-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="40-resources/engineering/javascript/react/react-internals/scheduler,-lanes-and-batching" data-basepath="/nexus-notes"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../../../..">Nexus</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-66" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-66" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../40-resources/">40 Resources</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../40-resources/engineering/">Engineering</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../40-resources/engineering/javascript/">JavaScript</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../40-resources/engineering/javascript/react/">React</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../40-resources/engineering/javascript/react/react-internals/">React Internals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Scheduler, Lanes and Batching</a></div></nav><h1 class="article-title">Scheduler, Lanes and Batching</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">tags</td><td class="note-properties-value metadata-property-value"><span class="note-properties-tags"><a href="../../../../../tags/reference" class="internal internal-link tag-link">reference</a><span class="note-properties-separator">, </span><a href="../../../../../tags/react" class="internal internal-link tag-link">react</a><span class="note-properties-separator">, </span><a href="../../../../../tags/react-internals" class="internal internal-link tag-link">react-internals</a><span class="note-properties-separator">, </span><a href="../../../../../tags/concurrent-rendering" class="internal internal-link tag-link">concurrent-rendering</a></span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2026-09-29T13:34:34.828Z">Sep 29, 2026</time><span>10 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="scheduler-lanes-and-batching">Scheduler, Lanes and Batching<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#scheduler-lanes-and-batching" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<blockquote>
+<p>How React decides <strong>when</strong> to render and <strong>how urgently</strong>. It covers update
+priorities (lanes), batching, time slicing, interruption and starvation.
+Read from the React 19.2.5 build (<code>requestUpdateLane</code>, <code>getEventPriority</code>,
+<code>getHighestPriorityLanes</code>, <code>ensureRootIsScheduled</code>, <code>performWorkOnRoot</code>,
+<code>scheduleTaskForRootDuringMicrotask</code>) and the <code>scheduler</code> package
+(<code>scheduler.development.js</code>). Part of <a href="../../../../../react-internals" class="internal internal-link alias" data-slug="react-internals">React Internals</a>. This is the
+machinery behind <a href="../../../../../concurrent-rendering" class="internal internal-link alias" data-slug="concurrent-rendering">Concurrent Rendering</a> and
+<a href="../../../../../40-resources/engineering/javascript/react/react-suspense/dynamic-promises/usetransition-and-avoiding-loading-flicker" class="internal internal-link alias" data-slug="40-resources/engineering/javascript/react/react-suspense/dynamic-promises/usetransition-and-avoiding-loading-flicker">useTransition and Avoiding Loading Flicker</a>. My own notes and
+clarifications are marked with <code>> 💬</code>.</p>
+</blockquote>
+<h2 id="interview-qa">Interview Q&amp;A<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#interview-qa" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Q: What are lanes?</strong>
+A: React’s representation of update <strong>priority</strong>. Each lane is one bit in a
+31-bit integer. Every update gets a lane, and every fiber keeps a bitmask of
+the lanes it has pending (<code>lanes</code>, <code>childLanes</code>). Bitmasks let React group
+updates (“render everything in these lanes together”), test membership with
+one <code>&amp;</code>, and pick the most urgent pending work with <code>lanes &amp; -lanes</code>.</p>
+<p><strong>Q: What is automatic batching?</strong>
+A: Multiple state updates in the same event or tick produce <strong>one</strong> render.
+<code>setState</code> doesn’t render. It queues an update and asks for the root to be
+scheduled, which happens in a microtask. Since React 18 this applies
+everywhere (promises, timeouts, native listeners), not just inside React
+event handlers. In our example, <code>setA(1); setB(2); setC(3)</code> in a click
+handler renders once.</p>
+<p><strong>Q: Does React always render concurrently in React 18+?</strong>
+A: No. Only <strong>non-blocking</strong> lanes (transitions, <code>useDeferredValue</code>,
+Suspense retries, idle, offscreen) render with the interruptible loop.
+Clicks, typing, hover and ordinary default updates render <strong>synchronously</strong>
+(<code>workLoopSync</code>). Concurrent features are opt-in per update.</p>
+<p><strong>Q: What happens if a transition keeps getting interrupted forever?</strong>
+A: It’s protected against <strong>starvation</strong>. Each pending lane gets an
+expiration time (250ms for sync/continuous lanes, 5s for transitions). Once
+it expires, React marks it expired and renders it synchronously, without
+yielding.</p>
+<p><strong>Q: Why does the Scheduler use <code>MessageChannel</code> instead of <code>setTimeout(0)</code>?</strong>
+A: Browsers clamp nested <code>setTimeout</code> to ≥4ms, which wastes time every
+slice. A <code>MessageChannel</code> message posts a macrotask right away, and still
+lets the browser paint and handle input between tasks.</p>
+<h2 id="the-problem-not-all-updates-are-equally-urgent">The problem: not all updates are equally urgent<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-problem-not-all-updates-are-equally-urgent" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>A keystroke must show up within a frame. A search-results list for that
+keystroke can lag a bit. A prefetched offscreen tab can wait indefinitely. A
+single “render queue” can’t express that. React needs to:</p>
+<ol>
+<li><strong>label</strong> each update with a priority,</li>
+<li><strong>group</strong> updates of the same priority into one render (batching),</li>
+<li><strong>pick</strong> the most urgent group next,</li>
+<li><strong>yield</strong> during low-priority renders so urgent ones can cut in,</li>
+<li>and <strong>not starve</strong> low-priority work forever.</li>
+</ol>
+<p>Lanes handle 1–3 and 5. The Scheduler package handles 4.</p>
+<h2 id="lanes-priority-as-bits">Lanes: priority as bits<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lanes-priority-as-bits" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Selected lanes from the 19.2.5 build (lower bit = higher priority):</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Lane</th><th>Value</th><th>Used for</th></tr></thead><tbody><tr><td><code>SyncLane</code></td><td><code>0b10</code> (2)</td><td>discrete events: <code>click</code>, <code>keydown</code>, <code>input</code>, <code>focus</code>…, and <code>flushSync</code></td></tr><tr><td><code>InputContinuousLane</code></td><td><code>0b1000</code> (8)</td><td>continuous events: <code>mousemove</code>, <code>pointermove</code>, <code>scroll</code>, <code>wheel</code>, <code>drag*</code></td></tr><tr><td><code>DefaultLane</code></td><td><code>0b100000</code> (32)</td><td>updates outside any event: <code>setTimeout</code>, promise callbacks, <code>fetch().then</code></td></tr><tr><td><code>TransitionLane1…</code></td><td><code>256</code> and up (a range of bits)</td><td><code>startTransition</code>, <code>useTransition</code>, <code>useDeferredValue</code> background renders</td></tr><tr><td><code>RetryLane…</code></td><td>higher bits</td><td>re-rendering a Suspense boundary after its data resolved</td></tr><tr><td><code>IdleLane</code></td><td><code>268435456</code></td><td>idle-priority work</td></tr><tr><td><code>OffscreenLane</code></td><td><code>536870912</code></td><td>hidden <code>&lt;Activity></code> / offscreen trees</td></tr></tbody></table></div>
+<p>Because they’re bits:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="js" data-theme="github-light github-dark"><code data-language="js" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">const</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> pending</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> SyncLane </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">|</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> TransitionLane1          </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// two kinds of work pending</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">(pending </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> SyncLane) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">!==</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 0</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">                          // &quot;is sync work pending?&quot; → true</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">pending </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> -</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">pending                                  </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// lowest set bit → SyncLane (most urgent)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">fiber.childLanes </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">|=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> lane                            </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// &quot;something below me has this work&quot;</span></span></code></pre></figure>
+<p><code>getHighestPriorityLanes</code> does exactly <code>lanes &amp; -lanes</code> (two’s complement
+isolates the lowest set bit), except that all transition bits are returned
+together so they render as one batch.</p>
+<h3 id="how-an-update-picks-its-lane">How an update picks its lane<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#how-an-update-picks-its-lane" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>From <code>requestUpdateLane(fiber)</code>:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="js" data-theme="github-light github-dark"><code data-language="js" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">function</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> requestUpdateLane</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">fiber</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> (isRendering </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> workInProgressRootRenderLanes </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">!==</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 0</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">		return</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> pickArbitraryLane</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">(workInProgressRootRenderLanes)  </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// setState during render</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	const</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> transition</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> ReactSharedInternals.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">T</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> (transition </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">!==</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> null</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">return</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> requestTransitionLane</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">()      </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// inside startTransition</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	return</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> resolveUpdatePriority</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">()                                </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// from the current event</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">function</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> resolveUpdatePriority</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">() {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	const</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> updatePriority</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> ReactDOMSharedInternals.p   </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// set by flushSync etc.</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> (updatePriority </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">!==</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 0</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">return</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> updatePriority</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	const</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> event</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> window.event</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	return</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> event </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">===</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> undefined</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> ?</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> DefaultEventPriority </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> getEventPriority</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">(event.type)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p><code>getEventPriority</code> is a big <code>switch</code> over DOM event names: <code>click</code>,
+<code>keydown</code>, <code>input</code>, <code>focusin</code> and similar → <code>DiscreteEventPriority</code> (=
+<code>SyncLane</code>). <code>mousemove</code>, <code>scroll</code>, <code>wheel</code>, <code>pointermove</code> and similar →
+<code>ContinuousEventPriority</code> (= <code>InputContinuousLane</code>). Everything else →
+<code>DefaultEventPriority</code> (= <code>DefaultLane</code>).</p>
+<blockquote>
+<p>💬 This is why the <em>same</em> <code>setState</code> call gets different priorities
+depending on where it runs. In an <code>onClick</code> it’s <code>SyncLane</code>. In a
+<code>setTimeout</code> it’s <code>DefaultLane</code>. Inside <code>startTransition</code> it’s a
+transition lane, whatever the event.</p>
+</blockquote>
+<h2 id="batching-queue-now-render-later">Batching: queue now, render later<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#batching-queue-now-render-later" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>setState</code> never renders by itself. The sequence is:</p>
+<ol>
+<li><code>dispatchSetState</code> creates an update <code>{ lane, action, next }</code> and stashes
+it in a module-level <code>concurrentQueues</code> array, together with its fiber and
+hook queue (<a href="../../../../../40-resources/engineering/javascript/react/react-internals/hooks-under-the-hood" class="internal internal-link alias" data-slug="40-resources/engineering/javascript/react/react-internals/hooks-under-the-hood">Hooks Under the Hood</a>). <code>getRootForUpdatedFiber</code> walks
+<code>return</code> pointers up to find the root.</li>
+<li>Later, when the next render starts (<code>prepareFreshStack</code> →
+<code>finishQueueingConcurrentUpdates</code>), each stashed update is linked into its
+hook’s circular queue, and <code>markUpdateLaneFromFiberToRoot</code> ORs the lane
+into <code>fiber.lanes</code> and into <code>childLanes</code> of every ancestor. <a href="../../../../../40-resources/engineering/javascript/react/react-internals/the-work-loop" class="internal internal-link alias" data-slug="40-resources/engineering/javascript/react/react-internals/the-work-loop">The Work Loop</a>
+uses that trail to find the changed fiber.</li>
+<li>Right away, <code>scheduleUpdateOnFiber</code> → <code>markRootUpdated</code> (adds the lane to
+<code>root.pendingLanes</code>) → <code>ensureRootIsScheduled(root)</code> adds the root to
+a list and, if not already done, schedules a <strong>microtask</strong>
+(<code>queueMicrotask</code>).</li>
+<li>The rest of your handler runs. More <code>setState</code> calls repeat 1–3 and find
+the microtask already scheduled.</li>
+<li>In the microtask, <code>processRootScheduleInMicrotask</code> looks at each root’s
+pending lanes. <strong>Sync</strong> lanes are rendered right there, at the end of the
+microtask. Other lanes get a Scheduler task at a matching priority
+(continuous → <code>UserBlockingPriority</code>, default → <code>NormalPriority</code>,
+transitions → <code>NormalPriority</code>, idle → <code>IdlePriority</code>).</li>
+</ol>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="tsx" data-theme="github-light github-dark"><code data-language="tsx" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">function</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> handleClick</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">() {</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">	setCount</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">((</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">c</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">=></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> c </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">+</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)   </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// queue update 1 (SyncLane), schedule microtask</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">	setFlag</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)            </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// queue update 2 (SyncLane), microtask already scheduled</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">	setText</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'hi'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)            </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// queue update 3</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}                            </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// handler returns → microtask → ONE render with all 3</span></span></code></pre></figure>
+<blockquote>
+<p>💬 Before React 18, batching only happened inside React’s own event
+handlers, because it relied on a “we’re in a batch” flag that React set
+around its handlers. Updates in <code>setTimeout</code> or <code>.then</code> rendered once per
+<code>setState</code>. The microtask-based scheduling in 18+ batches everything that
+happens in the same tick. <code>flushSync</code> is the opt-out.</p>
+</blockquote>
+<h2 id="sync-vs-concurrent-which-loop-runs">Sync vs concurrent: which loop runs<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#sync-vs-concurrent-which-loop-runs" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>When the root’s task runs, <code>performWorkOnRoot(root, lanes, forceSync)</code>
+chooses the loop:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="js" data-theme="github-light github-dark"><code data-language="js" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">const</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> shouldTimeSlice</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">	!</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">forceSync </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;&amp;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">	(lanes </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 127</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">===</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 0</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> &amp;&amp;</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">               // no Sync / InputContinuous / Default lanes (the &quot;blocking&quot; ones)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">	(lanes </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> root.expiredLanes) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">===</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 0</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> ||</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"> // and nothing has expired</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">	checkIfRootIsPrerendering</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">(root, lanes)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">shouldTimeSlice </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">?</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> renderRootConcurrent</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">(root, lanes) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">:</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> renderRootSync</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">(root, lanes, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)</span></span></code></pre></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Update comes from</th><th>Lane</th><th>Render loop</th></tr></thead><tbody><tr><td>click, typing, focus</td><td><code>SyncLane</code></td><td><code>workLoopSync</code>, in the microtask</td></tr><tr><td>hover, scroll</td><td><code>InputContinuousLane</code></td><td><code>workLoopSync</code>, in a UserBlocking Scheduler task</td></tr><tr><td><code>setTimeout</code>, <code>fetch().then</code></td><td><code>DefaultLane</code></td><td><code>workLoopSync</code>, in a Normal Scheduler task</td></tr><tr><td><code>startTransition</code>, <code>useDeferredValue</code></td><td>transition lanes</td><td><strong><code>workLoopConcurrentByScheduler</code></strong>: yields every ~5ms</td></tr><tr><td>Suspense retry, offscreen, idle</td><td>retry / offscreen / idle</td><td>concurrent</td></tr></tbody></table></div>
+<h2 id="the-scheduler-package-time-slicing">The Scheduler package: time slicing<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-scheduler-package-time-slicing" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>scheduler</code> is a small standalone package that React uses as a cooperative
+task queue for the main thread.</p>
+<p><strong>A min-heap of tasks.</strong> <code>scheduleCallback(priority, callback)</code> creates a task
+with <code>expirationTime = startTime + timeout</code>, where the timeout depends on
+the priority (from the source):</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Scheduler priority</th><th>timeout</th></tr></thead><tbody><tr><td><code>ImmediatePriority</code></td><td>−1 (already expired)</td></tr><tr><td><code>UserBlockingPriority</code></td><td>250ms</td></tr><tr><td><code>NormalPriority</code></td><td>5000ms</td></tr><tr><td><code>LowPriority</code></td><td>10000ms</td></tr><tr><td><code>IdlePriority</code></td><td>~12 days (effectively never)</td></tr></tbody></table></div>
+<p>Tasks are pushed onto a binary <strong>min-heap</strong> (<code>push</code>/<code>siftUp</code>/<code>pop</code>) keyed by
+<code>sortIndex = expirationTime</code>, so the most urgent task is always at the root
+of the heap, found in O(1) and removed in O(log n). Delayed tasks wait in a
+separate <code>timerQueue</code> heap, keyed by start time.</p>
+<p><strong>Running tasks in slices.</strong> The Scheduler’s host loop (<code>performWorkUntilDeadline</code>) pops tasks and runs
+them until <code>shouldYieldToHost()</code> says to stop:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="js" data-theme="github-light github-dark"><code data-language="js" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">function</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> shouldYieldToHost</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">() {</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">	// (simplified) keep going only while the current slice is under frameInterval</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	return</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> getCurrentTime</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">() </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> startTime </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">>=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> frameInterval   </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// frameInterval = 5 (ms)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p>If work remains, the Scheduler posts itself a new macrotask through a
+<code>MessageChannel</code> (<code>setImmediate</code> in Node, and <code>setTimeout</code> as a last
+resort). Between those macrotasks the browser can paint and dispatch input
+events.</p>
+<p><strong>Continuations.</strong> A task callback can return a function, which means “not
+done, call me again”. React’s concurrent render uses that. When
+<code>workLoopConcurrentByScheduler</code> exits because <code>shouldYield()</code> returned true,
+React’s task returns a continuation, and the next slice resumes at the
+remembered <code>workInProgress</code> fiber.</p>
+<h2 id="interruption-and-restart">Interruption and restart<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#interruption-and-restart" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Say a transition render for a big list is halfway done and the user types a
+character:</p>
+<ol>
+<li>The <code>keydown</code> handler calls <code>setQuery</code>, which gets <code>SyncLane</code>. The root now has
+<code>SyncLane | TransitionLane1</code> pending.</li>
+<li>The current slice ends (<code>shouldYield</code>). The microtask runs, sees a sync
+lane, and renders the root for <code>SyncLane</code>.</li>
+<li>Since the new lanes differ from the in-progress ones, React calls
+<code>prepareFreshStack</code>, which <strong>throws away</strong> the half-built work-in-progress
+tree. Nothing was committed, so there’s nothing to undo.</li>
+<li>The sync render and commit run. The input updates.</li>
+<li>The transition lane is still pending. It’s rescheduled and <strong>starts over
+from the root</strong>, now with the newer state.</li>
+</ol>
+<p>This is why transitions stay responsive and why their renders must be pure:
+they can run many times before one of them commits.</p>
+<h2 id="starvation-protection">Starvation protection<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#starvation-protection" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>In <code>scheduleTaskForRootDuringMicrotask</code>, React walks every pending lane
+bit. A lane that doesn’t have an expiration time yet gets one
+(<code>computeExpirationTime</code>: <strong>current time + 250ms</strong> for sync and continuous
+lanes, <strong>+ 5000ms</strong> for default, transition and retry lanes; idle and
+offscreen never expire). A lane whose
+time has passed is added to <code>root.expiredLanes</code>:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="js" data-theme="github-light github-dark"><code data-language="js" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">expirationTime </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> currentTime </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> (root.expiredLanes </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">|=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> lane)</span></span></code></pre></figure>
+<p>As shown above, any expired lane forces <code>renderRootSync</code>. A transition that
+has been interrupted for 5 seconds finishes without yielding.</p>
+<h2 id="scheduling-step-by-step">Scheduling, step by step<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#scheduling-step-by-step" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>A search box whose results update inside <code>startTransition</code>:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="tsx" data-theme="github-light github-dark"><code data-language="tsx" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">function</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> Search</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">() {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	const</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> [</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">text</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">setText</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> useState</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">''</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	const</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> [</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">query</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">setQuery</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> useState</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">''</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	const</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> [</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">isPending</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">startTransition</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> useTransition</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">()</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	return</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">		&lt;></span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">			&lt;</span><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">input</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="important">				value</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{text}</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="important">				onChange</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{(</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">e</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">=></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> {</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">					setText</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">(e.target.value)                        </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// urgent</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">					startTransition</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(() </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">=></span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> setQuery</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">(e.target.value)) </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// non-urgent</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">				}}</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">			/></span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">			&lt;</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="property">SlowResults</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="important"> query</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{query} </span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="important">dim</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{isPending} /></span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">		&lt;/></span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">	)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>t</th><th>Event</th><th>Lanes pending</th><th>What runs</th></tr></thead><tbody><tr><td>0ms</td><td>type “a”</td><td><code>setText</code> → Sync. <code>setQuery</code> → Transition1. <code>useTransition</code> also queues <code>isPending = true</code> at Sync</td><td>microtask scheduled</td></tr><tr><td>0ms</td><td>microtask</td><td>Sync | Transition1</td><td><strong>sync render</strong> of Sync updates only: <code>text = &quot;a&quot;</code>, <code>isPending = true</code>, <code>query</code> still <code>&quot;&quot;</code>. Commit, and the input shows “a”</td></tr><tr><td>0ms+</td><td>Scheduler task (Normal)</td><td>Transition1</td><td><strong>concurrent render</strong>: <code>query = &quot;a&quot;</code>, <code>isPending = false</code>, <code>SlowResults</code> starts rendering… yields every 5ms</td></tr><tr><td>30ms</td><td>type “b” (dispatched between two 5ms slices)</td><td>Sync | Transition1</td><td>microtask: sync render <code>text = &quot;ab&quot;</code>. The half-built Transition1 WIP is <strong>discarded</strong> (<code>prepareFreshStack</code>)</td></tr><tr><td>30ms+</td><td>Scheduler task</td><td>Transition1 (now with <code>query = &quot;ab&quot;</code>)</td><td>restart concurrent render from the root</td></tr><tr><td>90ms</td><td>–</td><td>–</td><td>transition render completes and <strong>commits</strong>: results for “ab”, un-dimmed</td></tr></tbody></table></div>
+<p>The <code>&quot;a&quot;</code> results were never committed. The user saw every keystroke
+immediately.</p>
+<h2 id="rules-and-caveats">Rules and caveats<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#rules-and-caveats" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>The default is synchronous.</strong> Clicks and typing render in one blocking
+pass. Use <code>startTransition</code>/<code>useDeferredValue</code> to make specific renders
+interruptible.</li>
+<li><strong>Transitions must be pure and restartable.</strong> They can be thrown away and
+re-run any number of times.</li>
+<li><strong>Batching is per tick.</strong> Updates separated by an <code>await</code> are in different
+ticks, and therefore separate renders.</li>
+<li><strong><code>flushSync</code> breaks batching on purpose.</strong> It renders and commits
+immediately at <code>SyncLane</code>. Use it sparingly (<a href="../../../../../40-resources/engineering/javascript/react/advanced-react-apis/flushsync" class="internal internal-link" data-slug="40-resources/engineering/javascript/react/advanced-react-apis/flushsync">flushSync</a>).</li>
+<li><strong>Time slicing doesn’t make work cheaper.</strong> A 300ms render in a transition
+still costs 300ms of CPU. It just stops blocking input. Fix slow renders
+first (<a href="../../../../../optimize-rendering" class="internal internal-link alias" data-slug="optimize-rendering">Optimize Rendering</a>).</li>
+<li><strong>Lane numbers are internal</strong> and change between versions (React 19 added
+a gesture lane, for example). Think in categories (sync, continuous,
+default, transition, idle), not values.</li>
+</ul>
+<h3 id="sources">Sources<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#sources" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>React 19.2.5 source: <code>requestUpdateLane</code>, <code>resolveUpdatePriority</code>, <code>getEventPriority</code>, <code>getHighestPriorityLanes</code>, <code>computeExpirationTime</code>, <code>ensureRootIsScheduled</code>, <code>processRootScheduleInMicrotask</code>, <code>scheduleTaskForRootDuringMicrotask</code>, <code>performWorkOnRoot</code>, <code>prepareFreshStack</code></li>
+<li><code>scheduler</code> package source: <code>unstable_scheduleCallback</code>, <code>push</code>/<code>pop</code> (min-heap), <code>shouldYieldToHost</code>, <code>frameInterval = 5</code>, <code>MessageChannel</code> host loop</li>
+<li><a href="https://github.com/facebook/react/blob/main/packages/react-reconciler/src/ReactFiberLane.js" class="external external-link">React source: <code>ReactFiberLane.js</code><svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></li>
+<li><a href="https://react.dev/blog/2022/03/29/react-v18" class="external external-link">React 18 release post: automatic batching, concurrent React<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></li>
+<li><a href="https://react.dev/reference/react/useTransition" class="external external-link">react.dev: <code>useTransition</code><svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-50" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#scheduler-lanes-and-batching" data-for="scheduler-lanes-and-batching">Scheduler, Lanes and Batching</a></li><li class="depth-1"><a href="#interview-qa" data-for="interview-qa">Interview Q&amp;A</a></li><li class="depth-1"><a href="#the-problem-not-all-updates-are-equally-urgent" data-for="the-problem-not-all-updates-are-equally-urgent">The problem: not all updates are equally urgent</a></li><li class="depth-1"><a href="#lanes-priority-as-bits" data-for="lanes-priority-as-bits">Lanes: priority as bits</a></li><li class="depth-2"><a href="#how-an-update-picks-its-lane" data-for="how-an-update-picks-its-lane">How an update picks its lane</a></li><li class="depth-1"><a href="#batching-queue-now-render-later" data-for="batching-queue-now-render-later">Batching: queue now, render later</a></li><li class="depth-1"><a href="#sync-vs-concurrent-which-loop-runs" data-for="sync-vs-concurrent-which-loop-runs">Sync vs concurrent: which loop runs</a></li><li class="depth-1"><a href="#the-scheduler-package-time-slicing" data-for="the-scheduler-package-time-slicing">The Scheduler package: time slicing</a></li><li class="depth-1"><a href="#interruption-and-restart" data-for="interruption-and-restart">Interruption and restart</a></li><li class="depth-1"><a href="#starvation-protection" data-for="starvation-protection">Starvation protection</a></li><li class="depth-1"><a href="#scheduling-step-by-step" data-for="scheduling-step-by-step">Scheduling, step by step</a></li><li class="depth-1"><a href="#rules-and-caveats" data-for="rules-and-caveats">Rules and caveats</a></li><li class="depth-2"><a href="#sources" data-for="sources">Sources</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../../../../../40-resources/engineering/javascript/react/react-internals/a-state-update,-end-to-end" class="internal">A State Update, End to End</a></li><li><a href="../../../../../40-resources/engineering/javascript/react/react-internals/hooks-under-the-hood" class="internal">Hooks Under the Hood</a></li><li><a href="../../../../../40-resources/engineering/javascript/react/react-internals/react-fiber" class="internal">React Fiber</a></li><li><a href="../../../../../40-resources/engineering/javascript/react/react-internals/react-internals---start-here" class="internal">React Internals - Start Here</a></li><li><a href="../../../../../40-resources/engineering/javascript/react/react-internals/" class="internal">React Internals</a></li><li><a href="../../../../../40-resources/engineering/javascript/react/react-internals/render-and-commit" class="internal">Render and Commit</a></li><li><a href="../../../../../40-resources/engineering/javascript/react/react-internals/the-work-loop" class="internal">The Work Loop</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script src="../../../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../../../postscript-3eea7814.js" type="module" data-persist="true"></script></html>
